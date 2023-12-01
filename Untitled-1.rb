@@ -5,6 +5,35 @@ class Tutorial < Gosu::Window
  # number to match the card
 @matchNum = 0
 
+def declaringCards
+# delcaring the cards
+@Card1= Card.new
+@Card2 = Card.new
+@Card3 = Card.new
+@Card4 = Card.new
+@Card5 = Card.new
+@Card6 = Card.new
+
+# setting the Id of the cards
+@Card1.settingId(1)
+@Card2.settingId(2)
+@Card3.settingId(3)
+@Card4.settingId(1)
+@Card5.settingId(3)
+@Card6.settingId(2)
+
+# creating a array of cards and using the shuffle method
+@card_Array = [@Card1,@Card2,@Card3,@Card4,@Card5,@Card6]
+@shuffleCards= @card_Array.shuffle
+# setting the locations of the cards
+@shuffleCards.at(0).location(100,100)
+@shuffleCards.at(1).location(200,100)
+@shuffleCards.at(2).location(300,100)
+@shuffleCards.at(3).location(400,100)
+@shuffleCards.at(4).location(200,225)
+@shuffleCards.at(5).location(300,225)
+end
+
 
 def initialize
     super 680,  460
@@ -24,34 +53,9 @@ def initialize
  #sound effect for match
   @matchSound = Gosu::Sample.new("matchSound.wav")
 
+declaringCards
 
 
-# delcaring the cards
-        @Card1= Card.new
-        @Card2 = Card.new
-        @Card3 = Card.new
-        @Card4 = Card.new
-        @Card5 = Card.new
-        @Card6 = Card.new
-
-        # setting the Id of the cards
-        @Card1.settingId(1)
-        @Card2.settingId(2)
-        @Card3.settingId(3)
-        @Card4.settingId(1)
-        @Card5.settingId(3)
-        @Card6.settingId(2)
-
-# creating a array of cards and using the shuffle method
-card_Array = [@Card1,@Card2,@Card3,@Card4,@Card5,@Card6]
-@shuffleCards= card_Array.shuffle
-# setting the locations of the cards
-@shuffleCards.at(0).location(100,100)
-@shuffleCards.at(1).location(200,100)
-@shuffleCards.at(2).location(300,100)
-@shuffleCards.at(3).location(400,100)
-@shuffleCards.at(4).location(200,225)
-@shuffleCards.at(5).location(300,225)
 
 # variables to check if the card has been clicked on
 @alreadyClicked1=false
@@ -82,6 +86,10 @@ card_Array = [@Card1,@Card2,@Card3,@Card4,@Card5,@Card6]
 #font color for text on screen
 @font_color = Gosu::Color::BLACK
 @font_RED = Gosu::Color::RED
+# Resetting Game
+@resetText = Gosu::Font.new(50)
+# reset the game
+@resetGame = false
 
 # player lost
 @playerLost = false
@@ -101,8 +109,57 @@ card_Array = [@Card1,@Card2,@Card3,@Card4,@Card5,@Card6]
 @@total_lives = 0
   end
 
+# reset the game back to normal
+def resetGame
+    @gameplay = true
+    @playerLost = false
+    @playerWon = false
+    # resetting the vars
+    @matchNum = 0
+    @doesNotMatch = 0
+    @@total_lives = 0
+    @points = 0
+    @draw_heart1 = true
+    @draw_heart2 = true
+    @draw_heart3 = true
+    #
+    @nomatch1= false
+    @nomatch2 = false
+    @nomatch3= false
+    @nomatch4 = false
+    @nomatch5= false
+    @nomatch6 = false
+    #
+    @alreadyClicked1 = false
+    @alreadyClicked2 = false
+    @alreadyClicked3 = false
+    @alreadyClicked4 = false
+    @alreadyClicked5 = false
+    @alreadyClicked6 = false
+    #
+    # next have to reset the cards
+
+   # the cards will also need a shuffle
+
+  declaringCards
+# resetting the images
+@shuffleCards.each do |card|
+  card.restartCard() # will go to each card and reset
+end
+
+end
+
+def button_down(id)
+  if id == Gosu::KbR # if R is pressed
+    resetGame # reset game
+  end
+end
+
+
 # all the game logic
-  def update
+def update
+
+
 #checking if player lost
 if @@total_lives == 3
   @playerLost = true
@@ -385,6 +442,7 @@ end
                   @draw_heart3 = false
                when @@total_lives = 2
                   @draw_heart2 = false
+
                when @@total_lives = 3
                 @draw_heart1 = false
                end
@@ -395,6 +453,8 @@ end
 
 
 end
+
+
 
   def draw
     # window drawing images
@@ -417,8 +477,9 @@ end
    @heart3.draw(480,15,1,0.1,0.1) if @draw_heart3 and @gameplay
    #drawing farm back ground and losing text
    @farmLand.draw(0,0,0,@scale_x,@scale_y) if @playerLost
-   @lostText.draw_text("You lost!",297,150,1,1.0,1.0,@font_color) if @playerLost
-
+   @lostText.draw_text("You lost!",297,125,1,1.0,1.0,@font_color) if @playerLost
+   # drawing the try again message
+   @resetText.draw_text("Press R to try again!",200,100,1,1.0,1.0,@font_RED) if @playerLost
    # drawing "You won!" text on screen
    @winnerText.draw_text("You won!",250,355,1,1.0,1.0,@font_RED) if @playerWon
 
